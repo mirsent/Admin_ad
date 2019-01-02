@@ -1,21 +1,7 @@
 <?php
 namespace Admin\Controller;
 use Common\Controller\AdminBaseController;
-/**
- * 系统配置controller
- */
 class SysController extends AdminBaseController{
-
-    public function demo(){
-        $assign = [
-            'table' => 'Demo',
-            'name' => 'demo_name',
-            'title' => '例子'
-        ];
-        $this->assign($assign);
-        $this->display();
-    }
-
 
     /*********************** 类型管理通用方法 *************************/
 
