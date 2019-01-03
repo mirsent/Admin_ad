@@ -24,7 +24,7 @@ class AdvertiseModel extends BaseModel{
             ->alias('a')
             ->join('__TAG__ t ON t.id = a.tag_id')
             ->join('__ADVERTISER__ ar ON ar.id = a.publisher_id')
-            ->field('a.*, tag_name, advertiser')
+            ->field('a.*, tag_name, ader_name')
             ->where(array_filter($cond))
             ->select();
         return $data;
@@ -36,7 +36,7 @@ class AdvertiseModel extends BaseModel{
             ->alias('a')
             ->join('__TAG__ t ON t.id = a.tag_id')
             ->join('__ADVERTISER__ ar ON ar.id = a.publisher_id')
-            ->field('tag_id, title, visited, SUBSTRING(publish_time, 12, 5) as publish_time, tag_name, advertiser')
+            ->field('tag_id, ad_title, visited, SUBSTRING(publish_time, 12, 5) as publish_time, tag_name, ader_name')
             ->where(array_filter($cond))
             ->select();
         return $data;
@@ -49,7 +49,7 @@ class AdvertiseModel extends BaseModel{
             ->alias('a')
             ->join('__TAG__ t ON t.id = a.tag_id')
             ->join('__ADVERTISER__ ar ON ar.id = a.publisher_id')
-            ->field('a.*, SUBSTRING(publish_time, 1, 16) as publish_time, tag_name, advertiser')
+            ->field('a.*, SUBSTRING(publish_time, 1, 16) as publish_time, tag_name, ader_name')
             ->where(array_filter($cond))
             ->select();
         return $data;

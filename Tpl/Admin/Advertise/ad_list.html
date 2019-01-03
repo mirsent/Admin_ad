@@ -2,11 +2,11 @@
 <block name="css">
 
 </block>
-<block name="header">违规广告 <small>列表</small></block>
+<block name="header">广告 <small>列表</small></block>
 <block name="content">
     <div class="box box-primary">
         <div class="box-header with-border">
-            <button type="button" class="btn btn-default" id="restore"><i class="fa fa-mail-reply fa-fw"></i>恢复</button>
+            <button type="button" class="btn btn-default" id="delete"><i class="fa fa-trash-o fa-fw"></i>下架</button>
         </div>
         <div class="box-body">
             <table class="table table-bordered table-hover table-single">
@@ -41,13 +41,13 @@
                         search: $('.fuzzy-search').val(),
 
                         tag_id: $('.search-tag').val(),
-                        title: $('.search-title').val(),
+                        ad_title: $('.search-title').val(),
                         publisher: $('.search-publisher').val(),
-                        publish_date: $('.search-publishtime').val()
+                        publish_date: $('.search-publishdate').val()
                     };
                     $.ajax({
                         type: "POST",
-                        url: "{:U('Advertise/get_advertise_down_info')}",
+                        url: "{:U('Advertise/get_advertise_info')}",
                         data: param,
                         dataType: "json",
                         success: function(result) {
@@ -57,14 +57,14 @@
                 },
                 columns: [
                     {
-                        "data": "title",
+                        "data": "ad_title",
                         "render": function(data, type, full) {
                             return '['+full.tag_name+'] '+data;
                         }
                     },
-                    { "data": "brief" },
-                    { "data": "imgs" },
-                    { "data": "advertiser" },
+                    { "data": "ad_brief" },
+                    { "data": "ad_imgs" },
+                    { "data": "ader_name" },
                     { "data": "publish_time" },
                     { "data": "visited" },
                 ],
@@ -73,7 +73,7 @@
                     advancedHtml += '<div class="layui-inline"><select class="search-tag" lay-search><option value="">标签</option><foreach name="tags" item="v"> <option value="{$v.id}">{$v.tag_name}</option> </foreach></select></div> ';
                     advancedHtml += '<div class="layui-inline"><input type="text" placeholder="标题" class="layui-input search-title"></div> ';
                     advancedHtml += '<div class="layui-inline"><input type="text" placeholder="发布人" class="layui-input search-publisher"></div> ';
-                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="发布时间" class="layui-input picker-date search-publishtime" readonly></div> ';
+                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="发布日期" class="layui-input picker-date search-publishdate" readonly></div> ';
                     advancedHtml += '<button type="button" class="btn btn-default" id="advancedSearch"><i class="fa fa-search fa-fw"></i>查询</button></form>';
 
                     $('.search-item').append(DTSearchGroup);
@@ -94,10 +94,10 @@
 
         /************************* document ready end *****************************/
 
-        $('#restore').on('click', function() {
+        $('#delete').on('click', function() {
             getSelectedData(oTable, function(data){
-                var title = '确认恢复广告： ' + data.title;
-                set_status(title, "{:U('Advertise/restore_advertise')}", {
+                var title = '确认下架广告： ' + data.ad_title;
+                set_status(title, "{:U('Advertise/delete_advertise')}", {
                     id: data.id,
                 });
             });

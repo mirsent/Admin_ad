@@ -21,7 +21,7 @@ class AdvertiseController extends AdminBaseController{
     // 广告列表 //
     //////////
 
-    public function list()
+    public function ad_list()
     {
         $cond['status'] = C('STATUS_Y');
         $tags = M('tag')->where($cond)->select();
@@ -47,11 +47,11 @@ class AdvertiseController extends AdminBaseController{
         // 搜索
         $search = I('search');
         if (strlen($search)>0) {
-            $cond['tag_name|title|brief|advertiser'] = array('like', '%'.$search.'%');
+            $cond['tag_name|ad_title|ad_brief|ader_name'] = array('like', '%'.$search.'%');
         }
         $cond['tag_id'] = I('tag_id');
-        $cond['title'] = I('title');
-        $cond['publisher'] = I('publisher');
+        $cond['ad_title'] = I('ad_title');
+        $cond['ader_name'] = I('publisher');
         $searchDate = I('publish_date');
         if (strlen($searchDate)) {
             $cond['publish_time'] = array('between', [$searchDate.' 00:00:00', $searchDate.' 23:59:59']);
@@ -66,9 +66,9 @@ class AdvertiseController extends AdminBaseController{
         if(isset(I('order')[0])){
             $i = intval($orderColumn);
             switch($i){
-                case 0: $ms->order('title '.$orderDir); break;
-                case 1: $ms->order('brief '.$orderDir); break;
-                case 3: $ms->order('advertiser '.$orderDir); break;
+                case 0: $ms->order('ad_title '.$orderDir); break;
+                case 1: $ms->order('ad_brief '.$orderDir); break;
+                case 3: $ms->order('ader_name '.$orderDir); break;
                 case 4: $ms->order('publish_time '.$orderDir); break;
                 case 5: $ms->order('visited '.$orderDir); break;
                 default: break;
@@ -92,6 +92,21 @@ class AdvertiseController extends AdminBaseController{
         ), JSON_UNESCAPED_UNICODE);
     }
 
+    //////////
+    // 违规广告 //
+    //////////
+
+    public function ad_list_down()
+    {
+        $cond['status'] = C('STATUS_Y');
+        $tags = M('tag')->where($cond)->select();
+
+        $assign = compact('tags');
+        $this->assign($assign);
+
+        $this->display();
+    }
+
     /**
      * 获取违规广告信息
      */
@@ -107,11 +122,11 @@ class AdvertiseController extends AdminBaseController{
         // 搜索
         $search = I('search');
         if (strlen($search)>0) {
-            $cond['tag_name|title|brief|advertiser'] = array('like', '%'.$search.'%');
+            $cond['tag_name|ad_title|ad_brief|ader_name'] = array('like', '%'.$search.'%');
         }
         $cond['tag_id'] = I('tag_id');
-        $cond['title'] = I('title');
-        $cond['publisher'] = I('publisher');
+        $cond['ad_title'] = I('ad_title');
+        $cond['ader_name'] = I('publisher');
         $searchDate = I('publish_date');
         if (strlen($searchDate)) {
             $cond['publish_time'] = array('between', [$searchDate.' 00:00:00', $searchDate.' 23:59:59']);
@@ -126,9 +141,9 @@ class AdvertiseController extends AdminBaseController{
         if(isset(I('order')[0])){
             $i = intval($orderColumn);
             switch($i){
-                case 0: $ms->order('title '.$orderDir); break;
-                case 1: $ms->order('brief '.$orderDir); break;
-                case 3: $ms->order('advertiser '.$orderDir); break;
+                case 0: $ms->order('ad_title '.$orderDir); break;
+                case 1: $ms->order('ad_brief '.$orderDir); break;
+                case 3: $ms->order('ader_name '.$orderDir); break;
                 case 4: $ms->order('publish_time '.$orderDir); break;
                 case 5: $ms->order('visited '.$orderDir); break;
                 default: break;

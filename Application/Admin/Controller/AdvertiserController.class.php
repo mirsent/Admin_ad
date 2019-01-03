@@ -18,12 +18,14 @@ class AdvertiserController extends AdminBaseController{
         // 搜索
         $search = I('search');
         if (strlen($search)>0) {
-            $cond['advertiser|location|brief|advertiser'] = array('like', '%'.$search.'%');
+            $cond['ader_name|location|brief|service'] = array('like', '%'.$search.'%');
         }
-        $cond['advertiser'] = I('advertiser');
+        $cond['ader_name'] = I('ader_name');
         $cond['tel'] = I('tel');
+
+        $searchDate = I('register_date');
         if (strlen($searchDate)) {
-            $cond['publish_time'] = array('between', [$searchDate.' 00:00:00', $searchDate.' 23:59:59']);
+            $cond['register_time'] = array('between', [$searchDate.' 00:00:00', $searchDate.' 23:59:59']);
         }
 
         $recordsFiltered = $ms->getAdvertiserNumber($cond);
@@ -35,7 +37,7 @@ class AdvertiserController extends AdminBaseController{
         if(isset(I('order')[0])){
             $i = intval($orderColumn);
             switch($i){
-                case 1: $ms->order('advertiser '.$orderDir); break;
+                case 1: $ms->order('ader_name '.$orderDir); break;
                 case 2: $ms->order('location '.$orderDir); break;
                 case 3: $ms->order('tel '.$orderDir); break;
                 case 4: $ms->order('service '.$orderDir); break;
@@ -59,6 +61,21 @@ class AdvertiserController extends AdminBaseController{
             "recordsFiltered" => intval($recordsFiltered),
             "data" => $infos
         ), JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * 删除广告商
+     */
+    public function delete_advertiser()
+    {
+        $cond['id'] = I('id');
+        $data['status'] = C('STATUS_N');
+        $res = M('advertiser')->where($cond)->save($data);
+
+        if ($res === false) {
+            ajax_return(0, '删除广告商失败');
+        }
+        ajax_return(1);
     }
 
 }
