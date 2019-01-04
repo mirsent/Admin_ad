@@ -3,7 +3,8 @@ namespace Common\Model;
 use Common\Model\BaseModel;
 class AdvertiserModel extends BaseModel{
     protected $_auto=array(
-        array('status','get_default_status',1,'callback')
+        array('status','get_default_status',1,'callback'),
+        array('register_time','get_time',1,'callback')
     );
 
     public function getAdvertiserNumber($cond=[])

@@ -81,4 +81,79 @@ class IndexController extends Controller {
         }
         ajax_return(1);
     }
+
+    /**
+     * 获取广告商个人信息
+     */
+    public function get_advertiser()
+    {
+        $cond['openid'] = I('openid');
+        $data = M('advertiser')->where($cond)->find();
+
+        ajax_return(1, '广告商信息', $data);
+    }
+
+    /**
+     * 更新广告商信息
+     */
+    public function update_advertiser()
+    {
+        $ader = D('Advertiser');
+        $cond['openid'] = I('openid');
+        $ader->create();
+        $res = $ader->where($cond)->save();
+
+        if ($res === false) {
+            ajax_return(0, '更新广告商失败');
+        }
+        ajax_return(1);
+    }
+    /**
+     * @param name 更新字段
+     * @param value 值
+     */
+    public function update_advertiser_once()
+    {
+        $cond['openid'] = I('openid');
+        $data[I('name')] = I('value');
+        $res = M('advertiser')->where($cond)->save($data);
+
+        if ($res === false) {
+            ajax_return(0, '更新广告商失败');
+        }
+        ajax_return(1);
+    }
+
+    /**
+     * 登录凭证校验
+     * @param js_code 登录凭证code
+     */
+    public function code_2_session()
+    {
+        $appid = C('WX_APPID');
+        $secret = C('WX_APPSECRET');
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.I('js_code').'&grant_type=authorization_code';
+        $info = file_get_contents($url);
+        $json = json_decode($info, true);
+
+        $openid = $json['openid'];
+        $ader = D('Advertiser');
+        $cond = [
+            'status' => C('STATUS_Y'),
+            'openid' => $openid
+        ];
+        $aderInfo = $ader->where($cond)->find();
+
+        if (!$aderInfo) {
+            $ader->create();
+            $ader->openid = $openid;
+            $ader->add();
+        }
+
+        $data = [
+            'openid' => $openid
+        ];
+
+        ajax_return(1, '凭证校验', $data);
+    }
 }
