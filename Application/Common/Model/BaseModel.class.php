@@ -6,11 +6,11 @@ use Think\Model;
  */
 class BaseModel extends Model{
 
-    /**
-     * 获取默认状态
-     */
     public function get_default_status(){
         return C('STATUS_Y');
+    }
+    public function get_time(){
+        return date('Y-m-d H:i:s');
     }
 
     /**

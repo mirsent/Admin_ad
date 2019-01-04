@@ -4,7 +4,9 @@ use Common\Model\BaseModel;
 class AdvertiseModel extends BaseModel{
 
     protected $_auto=array(
-        array('status','get_default_status',1,'callback')
+        array('status','get_default_status',1,'callback'),
+        array('publish_time','get_time',1,'callback'),
+        array('visited','0',1,'string')
     );
 
     public function getAdvertiseNumber($cond=[])

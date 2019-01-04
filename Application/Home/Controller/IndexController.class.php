@@ -52,4 +52,33 @@ class IndexController extends Controller {
 
         ajax_return(1, '广告商信息', $data);
     }
+
+    /**
+     * 上传图片
+     */
+    public function upload_img()
+    {
+        $path = upload_img('ad');
+        echo $path;
+    }
+
+    /**
+     * 发布广告
+     * @param publish_id 发布人
+     * @param tag_id 标签ID
+     * @param ad_title 标题
+     * @param ad_brief 简介
+     * @param ad_imgs 图片
+     */
+    public function add_advertise()
+    {
+        $ad = D('Advertise');
+        $ad->create();
+        $res = $ad->add();
+
+        if ($res === false) {
+            ajax_return(0, '发布广告失败');
+        }
+        ajax_return(1);
+    }
 }
