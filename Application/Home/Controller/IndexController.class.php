@@ -143,15 +143,17 @@ class IndexController extends Controller {
             'openid' => $openid
         ];
         $aderInfo = $ader->where($cond)->find();
+        $aderId = $aderInfo['id'];
 
         if (!$aderInfo) {
             $ader->create();
             $ader->openid = $openid;
-            $ader->add();
+            $aderId = $ader->add();
         }
 
         $data = [
-            'openid' => $openid
+            'openid'  => $openid,
+            'ader_id' => $aderId
         ];
 
         ajax_return(1, '凭证校验', $data);

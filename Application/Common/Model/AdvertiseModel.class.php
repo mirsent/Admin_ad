@@ -47,6 +47,9 @@ class AdvertiseModel extends BaseModel{
     public function getAdvertiseDetail($adId)
     {
         $cond['a.id'] = $adId;
+
+        $this->where(['id'=>$adId])->setInc('visited');
+
         $data = $this
             ->alias('a')
             ->join('__TAG__ t ON t.id = a.tag_id')
@@ -54,6 +57,11 @@ class AdvertiseModel extends BaseModel{
             ->field('a.*, SUBSTRING(publish_time, 1, 16) as publish_time, tag_name, ader_name')
             ->where(array_filter($cond))
             ->find();
+
+        if ($data['ad_imgs']) {
+            $data['ad_imgs_arr'] = explode(',', $data['ad_imgs']);
+        }
+
         return $data;
     }
 }
