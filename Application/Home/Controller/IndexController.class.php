@@ -17,13 +17,40 @@ class IndexController extends Controller {
     /**
      * 根据标签获取广告列表
      * @param tag_id 标签ID
+     * @param type 类型 1：发布 2：收藏
+     * @param ader_id 广告商ID
      */
     public function get_advertise_list()
     {
-        $cond = [
-            'a.status' => C('STATUS_Y'),
-            'tag_id'   => I('tag_id')
-        ];
+        $type = I('type');
+
+        switch ($type) {
+            case '1':
+                $cond = [
+                    'a.status' => C('STATUS_Y'),
+                    'publisher_id' => I('ader_id')
+                ];
+                break;
+            case '2':
+                $cond_collect = [
+                    'status' => C('STATUS_Y'),
+                    'ader_id' => I('ader_id')
+                ];
+                $collects = M('collect')->where($cond_collect)->getField('ad_id', true);
+                $cond = [
+                    'a.status' => C('STATUS_Y'),
+                    'a.id' => array('in', $collects)
+                ];
+                break;
+
+            default:
+                $cond = [
+                    'a.status' => C('STATUS_Y'),
+                    'tag_id'   => I('tag_id')
+                ];
+                break;
+        }
+
         $data = D('Advertise')->getAdvertiseDataApi($cond);
 
         ajax_return(1, '广告列表', $data);
@@ -157,11 +184,28 @@ class IndexController extends Controller {
 
     /**
      * 获取广告商个人信息
+     * @return 广告商基本信息
+     *         发布广告数量
+     *         收藏广告数量
      */
     public function get_advertiser()
     {
         $cond['openid'] = I('openid');
         $data = M('advertiser')->where($cond)->find();
+
+        $aderId = $data['id'];
+
+        $cond_ad = [
+            'status' => C('STATUS_Y'),
+            'publisher_id' => $aderId
+        ];
+        $data['n_ad'] = M('advertise')->where($cond_ad)->count();
+
+        $cond_collect = [
+            'status' => C('STATUS_Y'),
+            'ader_id' => $aderId
+        ];
+        $data['n_collect'] = M('collect')->where($cond_collect)->count();
 
         ajax_return(1, '广告商信息', $data);
     }
