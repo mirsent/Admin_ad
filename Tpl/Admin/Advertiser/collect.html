@@ -2,22 +2,16 @@
 <block name="css">
 
 </block>
-<block name="header">广告商 <small>列表</small></block>
+<block name="header">广告收藏 <small>列表</small></block>
 <block name="content">
     <div class="box box-primary">
-        <div class="box-header with-border">
-            <button type="button" class="btn btn-default" id="delete"><i class="fa fa-ban fa-fw"></i>封停</button>
-        </div>
         <div class="box-body">
             <table class="table table-bordered table-hover table-single">
                 <thead>
                     <tr>
-                        <th width="80">头像</th>
-                        <th>名称</th>
-                        <th>地址</th>
-                        <th>电话</th>
-                        <th>服务内容</th>
-                        <th>注册时间</th>
+                        <th>广告</th>
+                        <th>收藏人</th>
+                        <th>收藏时间</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,13 +34,13 @@
                         order: data.order,
                         search: $('.fuzzy-search').val(),
 
-                        ader_name: $('.search-name').val(),
-                        tel: $('.search-tel').val(),
-                        register_date: $('.search-date').val()
+                        ad_title: $('.search-ad').val(),
+                        nickname: $('.search-ader').val(),
+                        collect_time: $('.search-date').val()
                     };
                     $.ajax({
                         type: "POST",
-                        url: "{:U('Advertiser/get_advertiser_info')}",
+                        url: "{:U('Advertiser/get_collection_info')}",
                         data: param,
                         dataType: "json",
                         success: function(result) {
@@ -55,21 +49,15 @@
                     });
                 },
                 columns: [
-                    {
-                        "data": "head",
-                        "render": DT.RENDER.IMG
-                    },
-                    { "data": "ader_name" },
-                    { "data": "location" },
-                    { "data": "tel" },
-                    { "data": "service" },
-                    { "data": "register_time" },
+                    { "data": "ad_title" },
+                    { "data": "nickname" },
+                    { "data": "collect_time" },
                 ],
                 initComplete: function(settings, json) {
                     var advancedHtml = '<form class="layui-form search-box">';
-                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="名称" class="layui-input search-name"></div> ';
-                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="电话" class="layui-input search-tel"></div> ';
-                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="注册日期" class="layui-input picker-date search-date" readonly></div> ';
+                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="广告" class="layui-input search-ad"></div> ';
+                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="收藏人" class="layui-input search-ader"></div> ';
+                    advancedHtml += '<div class="layui-inline"><input type="text" placeholder="收藏日期" class="layui-input picker-date search-date" readonly></div> ';
                     advancedHtml += '<button type="button" class="btn btn-default" id="advancedSearch"><i class="fa fa-search fa-fw"></i>查询</button></form>';
 
                     $('.search-item').append(DTSearchGroup);
