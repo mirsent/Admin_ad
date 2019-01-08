@@ -53,6 +53,79 @@ class IndexController extends Controller {
         ajax_return(1, '广告商信息', $data);
     }
 
+
+    ////////
+    // 收藏 //
+    ////////
+
+    /**
+     * 是否收藏
+     * @param ad_id 广告ID
+     * @param ader_id 广告商ID
+     */
+    public function is_collect()
+    {
+        $cond = [
+            'ad_id'   => I('ad_id'),
+            'ader_id' => I('ader_id'),
+            'status'  => C('STATUS_Y')
+        ];
+        $collect = M('collect')->where($cond)->find();
+
+        if ($collect) {
+            $isCollect = 1;
+        } else {
+            $isCollect = 0;
+        }
+
+        ajax_return(1, '是否收藏', $isCollect);
+    }
+
+    /**
+     * 收藏
+     * @param ad_id 广告ID
+     * @param ader_id 广告商ID
+     */
+    public function collect()
+    {
+        $collect = D('Collect');
+        $cond = [
+            'ad_id'   => I('ad_id'),
+            'ader_id' => I('ader_id')
+        ];
+        $collectInfo = $collect->where($cond)->find();
+
+        if ($collectInfo) {
+            $data = [
+                'status' => C('STATUS_Y'),
+                'collect_time' => date('Y-m-d H:i:s')
+            ];
+            $collect->where($cond)->save($data);
+        } else {
+            $collect->create();
+            $collect->add();
+        }
+
+        ajax_return(1, '收藏');
+    }
+
+    /**
+     * 取消收藏
+     * @param ad_id 广告ID
+     * @param ader_id 广告商ID
+     */
+    public function cancel_collect()
+    {
+        $cond = [
+            'ad_id'   => I('ad_id'),
+            'ader_id' => I('ader_id')
+        ];
+        $data['status'] = C('STATUS_N');
+        M('collect')->where($cond)->save($data);
+
+        ajax_return(1, '取消收藏');
+    }
+
     /**
      * 上传图片
      */

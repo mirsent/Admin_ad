@@ -18,7 +18,7 @@ class CollectModel extends BaseModel{
         return $data;
     }
 
-    public function getCollectData($data=[])
+    public function getCollectData($cond=[])
     {
         $data = $this
             ->alias('c')
