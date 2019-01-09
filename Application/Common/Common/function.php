@@ -968,6 +968,10 @@ function qrcode($url,$size=4){
     Vendor('Phpqrcode.phpqrcode');
     QRcode::png($url,false,QR_ECLEVEL_L,$size,2,false,0xFFFFFF,0x000000);
 }
+function qrcodepng($url,$path,$size=4){
+    Vendor('Phpqrcode.phpqrcode');
+    QRcode::png($url,$path,QR_ECLEVEL_L,$size,2,false,0xFFFFFF,0x000000);
+}
 
 /**
  * 数组转xls格式的excel文件

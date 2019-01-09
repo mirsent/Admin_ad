@@ -192,15 +192,18 @@ class IndexController extends Controller {
     {
         $cond['openid'] = I('openid');
         $data = M('advertiser')->where($cond)->find();
+        $data['qrcode'] = C('HOST').'/Uploads/qrcode/'.$data['id'].'.png';
 
         $aderId = $data['id'];
 
+        // 发布广告数量
         $cond_ad = [
             'status' => C('STATUS_Y'),
             'publisher_id' => $aderId
         ];
         $data['n_ad'] = M('advertise')->where($cond_ad)->count();
 
+        // 收藏广告数量
         $cond_collect = [
             'status' => C('STATUS_Y'),
             'ader_id' => $aderId
@@ -266,6 +269,11 @@ class IndexController extends Controller {
             $ader->create();
             $ader->openid = $openid;
             $aderId = $ader->add();
+
+            // 生成二维码
+            $url = C('HOST').'/qrcode?id='.$aderId;
+            $path = 'Uploads/qrcode/'.$aderId.'.png';
+            qrcodepng($url,$path,6);
         }
 
         $data = [
