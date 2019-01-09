@@ -257,18 +257,21 @@ class IndexController extends Controller {
         $json = json_decode($info, true);
 
         $openid = $json['openid'];
-        $ader = D('Advertiser');
+
         $cond = [
             'status' => C('STATUS_Y'),
             'openid' => $openid
         ];
-        $aderInfo = $ader->where($cond)->find();
-        $aderId = $aderInfo['id'];
+        $aderInfo = D('Advertiser')->where($cond)->find();
 
+        // 注册
         if (!$aderInfo) {
+            $ader = D('Advertiser');
             $ader->create();
             $ader->openid = $openid;
             $aderId = $ader->add();
+
+            $aderInfo = $ader->find($aderId);
 
             // 生成二维码
             $url = C('HOST').'/qrcode?id='.$aderId;
@@ -276,11 +279,8 @@ class IndexController extends Controller {
             qrcodepng($url,$path,6);
         }
 
-        $data = [
-            'openid'  => $openid,
-            'ader_id' => $aderId
-        ];
+        $aderInfo['openid'] = $openid;
 
-        ajax_return(1, '凭证校验', $data);
+        ajax_return(1, '凭证校验', $aderInfo);
     }
 }
