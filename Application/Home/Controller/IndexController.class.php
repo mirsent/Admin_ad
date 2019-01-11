@@ -62,8 +62,13 @@ class IndexController extends Controller {
      */
     public function get_advertise_detail()
     {
-        $advertiseId = I('advertise_id');
+        $advertiseId = I('ad_id');
         $data = D('Advertise')->getAdvertiseDetail($advertiseId);
+
+        // 浏览记录
+        $browse = D('LogBrowse');
+        $browse->create();
+        $browse->add();
 
         ajax_return(1, '广告详情', $data);
     }

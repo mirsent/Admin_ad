@@ -48,6 +48,7 @@ class AdvertiseModel extends BaseModel{
     {
         $cond['a.id'] = $adId;
 
+        // 查看数+1
         $this->where(['id'=>$adId])->setInc('visited');
 
         $data = $this
