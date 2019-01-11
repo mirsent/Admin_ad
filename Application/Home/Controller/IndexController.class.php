@@ -58,7 +58,9 @@ class IndexController extends Controller {
 
     /**
      * 广告详情
-     * @param advertise_id 广告ID
+     * @param ad_id 广告ID
+     * @param tag_id 标签ID
+     * @param ader_id 广告商ID
      */
     public function get_advertise_detail()
     {
@@ -67,8 +69,18 @@ class IndexController extends Controller {
 
         // 浏览记录
         $browse = D('LogBrowse');
-        $browse->create();
-        $browse->add();
+        $cond_browse = [
+            'tag_id'  => I('tag_id'),
+            'ad_id'   => I('ad_id'),
+            'ader_id' => I('ader_id')
+        ];
+        $browseInfo = $browse->where($cond_browse)->find();
+        if ($browseInfo) {
+            $browse->where($cond_browse)->save(['browse_time'=>date('Y-m-d H:i:s')]);
+        } else {
+            $browse->create();
+            $browse->add();
+        }
 
         ajax_return(1, '广告详情', $data);
     }
@@ -292,27 +304,43 @@ class IndexController extends Controller {
 
     /**
      * 附近广告
+     * @param latitude 纬度
+     * @param longitude 经度
      */
     public function get_nearby_advertise()
     {
         $config = M('config')->find(1);
 
-        $cond['id'] = I('ader_id');
-        $aderInfo = M('advertiser')->where($cond)->find();
-        $latitude = $aderInfo['latitude'];
-        $longitude = $aderInfo['longitude'];
+        $latitude = I('latitude');
+        $longitude = I('longitude');
 
         $point = $this->returnSquarePoint($longitude, $latitude, $config['nearby']*1000);
 
         // 附近广告商
+        $advertiser = M('advertiser');
         $cond_nearby = [
             'status' => C('STATUS_Y'),
             'latitude' => array('between', [$point['min_lat'], $point['max_lat']]),
             'longitude' => array('between', [$point['min_lng'], $point['max_lng']])
         ];
-        $nearbyAder = M('advertiser')->where($cond_nearby)->select();
+        $nearbyAderIds = $advertiser->where($cond_nearby)->getField('id', true);
 
+        $cond_ad = [
+            'ad.status'    => C('STATUS_Y'),
+            'publisher_id' => array('in', $nearbyAderIds)
+        ];
+        $ads = M('advertise')
+            ->alias('ad')
+            ->join('__ADVERTISER__ ader ON ader.id = ad.publisher_id')
+            ->field('ad.*, ader_name,latitude,longitude')
+            ->where($cond_ad)
+            ->select();
 
+        foreach ($ads as $key => $value) {
+            $ads[$key]['distance'] = $this->getDistance($latitude, $longitude, $value['latitude'], $value['longitude']);
+        }
+
+        ajax_return(1, '附近广告', $ads);
     }
 
     /**
@@ -347,5 +375,32 @@ class IndexController extends Controller {
             'max_lng' => $maxLng
         );
         return $range;
+    }
+
+    /**
+     * 求两个已知经纬度之间的距离,单位为米
+     *
+     * @param lng1 $ ,lng2 经度
+     * @param lat1 $ ,lat2 纬度
+     * @return float 距离，单位米
+     */
+    public function getDistance($lat1,$lng1,$lat2,$lng2){
+        // 将角度转为狐度
+        $radLat1 = deg2rad($lat1); //deg2rad()函数将角度转换为弧度
+        $radLat2 = deg2rad($lat2);
+        $radLng1 = deg2rad($lng1);
+        $radLng2 = deg2rad($lng2);
+        $a = $radLat1 - $radLat2;
+        $b = $radLng1 - $radLng2;
+        $distance = 2 * asin(sqrt(pow(sin($a / 2), 2) + cos($radLat1) * cos($radLat2) * pow(sin($b / 2), 2))) * 6378.137 * 1000;
+
+        $distance = round($distance);
+        if ($distance > 1000) {
+            $distance = ceil($distance / 1000).'公里以内';
+        } else {
+            $distance = $distance.'米以内';
+        }
+
+        return $distance;
     }
 }
