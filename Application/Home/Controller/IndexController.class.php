@@ -283,4 +283,64 @@ class IndexController extends Controller {
 
         ajax_return(1, '凭证校验', $aderInfo);
     }
+
+
+    /**
+     * 附近广告
+     */
+    public function get_nearby_advertise()
+    {
+        $config = M('config')->find(1);
+
+        $cond['id'] = I('ader_id');
+        $aderInfo = M('advertiser')->where($cond)->find();
+        $latitude = $aderInfo['latitude'];
+        $longitude = $aderInfo['longitude'];
+
+        $point = $this->returnSquarePoint($longitude, $latitude, $config['nearby']*1000);
+
+        // 附近广告商
+        $cond_nearby = [
+            'status' => C('STATUS_Y'),
+            'latitude' => array('between', [$point['min_lat'], $point['max_lat']]),
+            'longitude' => array('between', [$point['min_lng'], $point['max_lng']])
+        ];
+        $nearbyAder = M('advertiser')->where($cond_nearby)->select();
+
+
+    }
+
+    /**
+     * 正方形的四个点的经纬度坐标
+     * @param  $lng      经度
+     * @param  $lat      纬度
+     * @param  $distance 半径(m)
+     */
+    public function returnSquarePoint($lng, $lat, $distance)
+    {
+        $PI = 3.14159265;
+        $longitude = $lng;
+        $latitude = $lat;
+
+        $degree = (24901*1609)/360.0;
+        $raidusMile = $distance;
+
+        $dpmLat = 1/$degree;
+        $radiusLat = $dpmLat*$raidusMile;
+        $minLat = $latitude - $radiusLat; //最小纬度
+        $maxLat = $latitude + $radiusLat; //最大纬度
+
+        $mpdLng = $degree*cos($latitude * ($PI/180));
+        $dpmLng = 1 / $mpdLng;
+        $radiusLng = $dpmLng*$raidusMile;
+        $minLng = $longitude - $radiusLng; //最小经度
+        $maxLng = $longitude + $radiusLng; //最大经度
+        $range = array(
+            'min_lat' => $minLat,
+            'max_lat' => $maxLat,
+            'min_lng' => $minLng,
+            'max_lng' => $maxLng
+        );
+        return $range;
+    }
 }

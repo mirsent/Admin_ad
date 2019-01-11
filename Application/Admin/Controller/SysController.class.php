@@ -115,4 +115,34 @@ class SysController extends AdminBaseController{
         }
         ajax_return(1);
     }
+
+
+    /************************ 参数管理 ***************************/
+
+    /**
+     * 参数设置页面
+     */
+    public function cog(){
+        $cog = M('config')->find(1);
+
+        $assign = compact('cog');
+        $this->assign($assign);
+        $this->display();
+    }
+
+    /**
+     * 修改参数
+     */
+    public function input_config(){
+        $cog = M('config');
+
+        $cond['id'] = 1;
+        $cog->create();
+        $res = $cog->where($cond)->save();
+
+        if ($res === false) {
+            ajax_return(0, '修改参数失败');
+        }
+        ajax_return(1);
+    }
 }

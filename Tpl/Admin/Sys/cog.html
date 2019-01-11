@@ -1,0 +1,63 @@
+<extend name="Public/base" />
+<block name="css">
+    <style type="text/css">
+        .layui-form{
+            margin-top: 20px;
+        }
+        .layui-form-label{
+            width: 150px;
+            text-align: left;
+        }
+    </style>
+</block>
+<block name="header">参数 <small>管理</small></block>
+<block name="content">
+    <hr>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">每天最多发布数</label>
+            <div class="layui-input-inline">
+                <input type="text" name="pre_max" value="{$cog.pre_max}" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">附近范围（公里）</label>
+            <div class="layui-input-inline">
+                <input type="text" name="nearby" value="{$cog.nearby}" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </form>
+</block>
+<block name="js">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('[name="pre_max"]').on('blur', function(){
+                var value = $(this).val();
+                $.ajax({
+                    type: "POST",
+                    url: "{:U('Sys/input_config')}",
+                    data: {
+                        'pre_max': value
+                    },
+                    dataType:"json",
+                    success: function(result) {
+                        if (result.status == 1) {
+                            toastr["success"]("修改参数成功", "");
+                        } else {
+                            toastr["warning"]("稍后重试...", "");
+                        }
+                    }
+                });
+            })
+        });
+
+        /************************* document ready end *****************************/
+
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+            form = layui.form;
+
+
+        });
+    </script>
+</block>
