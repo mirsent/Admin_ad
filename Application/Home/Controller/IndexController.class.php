@@ -200,6 +200,29 @@ class IndexController extends Controller {
     }
 
     /**
+     * 检测发布权限
+     * @param ader_id 广告商ID
+     */
+    public function check_publish_auth()
+    {
+        // 最大发布数
+        $config = M('config')->find(1);
+        $preMax = $config['pre_max'];
+
+        // 已发布数量
+        $cond = [
+            'publisher_id' => I('ader_id'),
+            'publish_date' => date('Y-m-d')
+        ];
+        $number = M('advertise')->where($cond)->count();
+
+        if ($number >= $preMax) {
+            ajax_return(0, '今日发布数已用光');
+        }
+        ajax_return(1);
+    }
+
+    /**
      * 获取广告商个人信息
      * @return 广告商基本信息
      *         发布广告数量
@@ -332,15 +355,20 @@ class IndexController extends Controller {
         $ads = M('advertise')
             ->alias('ad')
             ->join('__ADVERTISER__ ader ON ader.id = ad.publisher_id')
-            ->field('ad.*, ader_name,latitude,longitude')
+            ->field('ad.id,ad.ad_title,ad_brief, ader_name,latitude,longitude')
             ->where($cond_ad)
             ->select();
 
         foreach ($ads as $key => $value) {
-            $ads[$key]['distance'] = $this->getDistance($latitude, $longitude, $value['latitude'], $value['longitude']);
+            $data[$key]['distance'] = $this->getDistance($latitude, $longitude, $value['latitude'], $value['longitude']);
+            $data[$key]['id'] = $value['id'];
+            $data[$key]['ad_title'] = $value['ad_title'];
+            $data[$key]['ad_brief'] = $value['ad_brief'];
         }
 
-        ajax_return(1, '附近广告', $ads);
+        rsort($data);
+
+        ajax_return(1, '附近广告', $data);
     }
 
     /**

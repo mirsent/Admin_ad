@@ -6,6 +6,7 @@ class AdvertiseModel extends BaseModel{
     protected $_auto=array(
         array('status','get_default_status',1,'callback'),
         array('publish_time','get_time',1,'callback'),
+        array('publish_date','get_date',1,'callback'),
         array('visited','0',1,'string')
     );
 
@@ -38,9 +39,14 @@ class AdvertiseModel extends BaseModel{
             ->alias('a')
             ->join('__TAG__ t ON t.id = a.tag_id')
             ->join('__ADVERTISER__ ar ON ar.id = a.publisher_id')
-            ->field('a.id, tag_id, ad_title, visited, SUBSTRING(publish_time, 12, 5) as publish_time, SUBSTRING(publish_time, 1, 16) as publish_datetime, tag_name, ader_name')
+            ->field('a.id, tag_id, ad_title, ad_brief, ad_imgs, visited, SUBSTRING(publish_time, 12, 5) as publish_time, SUBSTRING(publish_time, 1, 16) as publish_datetime, tag_name, ader_name,is_vip')
             ->where(array_filter($cond))
             ->select();
+
+        foreach ($data as $key => $value) {
+            $data[$key]['cover'] = explode(',',$value['ad_imgs'])[0];
+        }
+
         return $data;
     }
 

@@ -9,6 +9,9 @@ class BaseModel extends Model{
     public function get_default_status(){
         return C('STATUS_Y');
     }
+    public function get_date(){
+        return date('Y-m-d');
+    }
     public function get_time(){
         return date('Y-m-d H:i:s');
     }
