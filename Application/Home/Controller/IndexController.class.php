@@ -325,6 +325,30 @@ class IndexController extends Controller {
     }
 
 
+
+
+    /**
+     * 推荐广告
+     * @param ader_id 广告商ID
+     * @param limit 条数
+     */
+    public function get_recommend()
+    {
+        // 查看最多
+        $cond['ader_id'] = I('ader_id');
+        $maxInfo = D('LogBrowse')->getBrowseMax($cond);
+
+        $limit = I('limit')?:3;
+        $cond_ad = [
+            'a.status' => C('STATUS_Y'),
+            'tag_id'   => $maxInfo['tag_id']
+        ];
+        $data = D('Advertise')->order('rand()')->limit($limit)->getAdvertiseDataApi($cond_ad);
+
+        ajax_return(1, '推荐广告', $data);
+    }
+
+
     /**
      * 附近广告
      * @param latitude 纬度

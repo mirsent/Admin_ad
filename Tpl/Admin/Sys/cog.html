@@ -49,6 +49,24 @@
                     }
                 });
             })
+            $('[name="nearby"]').on('blur', function(){
+                var value = $(this).val();
+                $.ajax({
+                    type: "POST",
+                    url: "{:U('Sys/input_config')}",
+                    data: {
+                        'nearby': value
+                    },
+                    dataType:"json",
+                    success: function(result) {
+                        if (result.status == 1) {
+                            toastr["success"]("修改参数成功", "");
+                        } else {
+                            toastr["warning"]("稍后重试...", "");
+                        }
+                    }
+                });
+            })
         });
 
         /************************* document ready end *****************************/
